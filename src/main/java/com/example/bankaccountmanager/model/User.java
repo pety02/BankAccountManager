@@ -25,8 +25,8 @@ public class User {
     private String email;
     @Column(nullable = false, length = 150, unique = true)
     private String username;
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "owner")
-    private Set<Password> passwords;
+    @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "owner")
+    private Password password;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "holder")
     private Set<BankAccount> bankAccounts;
 
@@ -35,18 +35,18 @@ public class User {
     public User(final User other) {
         this(other.getName(), other.getSurname(), other.getTelephone(),
                 other.getBirthDate(), other.getEmail(), other.getUsername(),
-                other.getPasswords(), other.getBankAccounts());
+                other.getPassword(), other.getBankAccounts());
     }
     public User(final String name, final String surname, final String telephone,
                 final Date birthDate, final String email, final String username,
-                final Set<Password> passwords, final Set<BankAccount> bankAccounts) {
+                final Password password, final Set<BankAccount> bankAccounts) {
         setName(name);
         setSurname(surname);
         setTelephone(telephone);
         setBirthDate(birthDate);
         setEmail(email);
         setUsername(username);
-        setPasswords(passwords);
+        setPassword(password);
         setBankAccounts(bankAccounts);
     }
 
@@ -106,12 +106,12 @@ public class User {
         this.username = username;
     }
 
-    public Set<Password> getPasswords() {
-        return new HashSet<>(passwords);
+    public Password getPassword() {
+        return new Password(password);
     }
 
-    public void setPasswords(final Set<Password> passwords) {
-        this.passwords = new HashSet<>(passwords);
+    public void setPassword(final Password password) {
+        this.password = new Password(password);
     }
 
     public Set<BankAccount> getBankAccounts() {

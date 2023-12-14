@@ -9,7 +9,7 @@ public class Password {
     private Long passwordID;
     @Column(nullable = false, length = 400)
     private String hash;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="owner_id", nullable=false)
     private User owner;
 
