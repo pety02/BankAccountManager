@@ -1,89 +1,56 @@
 package com.example.bankaccountmanager.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
 
-@Table
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "TRANSACTIONS", schema = "public")
 @Entity
 public class Transaction {
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionID;
-    @Column
-    private Date date;
+    @NonNull
+    @NotBlank
+    @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
+    private Date dateTime;
+    @NonNull
+    @NotBlank
+    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "bankAccound_id", nullable = false)
-    private BankAccount bankAccount;
+    @JoinColumn(name = "counterparty_id", nullable = false)
+    private BankAccount counterparty;
+    @NonNull
+    @NotBlank
+    @Size(min = 1)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipient_id", nullable = false)
+    private BankAccount recipient;
+    @NonNull
+    @NotBlank
+    @Length(min = 1, max = 50)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
     private TransactionType type;
+    @NonNull
+    @NotBlank
+    @Size(min = 0)
     @Column(nullable = false)
     private Double money;
+    @NonNull
+    @NotBlank
+    @Length(min = 1, max = 500)
     @Column(nullable = false, length = 500)
     private String reason;
-
-    public Transaction() {
-    }
-    public Transaction(final Transaction other) {
-        this(other.getDate(), other.getBankAccount(),
-                other.getType(), other.getMoney(),
-                other.getReason());
-    }
-    public Transaction(final Date date, final BankAccount bankAccount,
-                       final TransactionType type, final Double money,
-                       final String reason) {
-        setDate(date);
-        setBankAccount(bankAccount);
-        setType(type);
-        setMoney(money);
-        setReason(reason);
-    }
-
-    public Long getTransactionID() {
-        return transactionID;
-    }
-
-    public void setTransactionID(final Long transactionID) {
-        this.transactionID = transactionID;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(final Date date) {
-        this.date = date;
-    }
-
-    public BankAccount getBankAccount() {
-        return new BankAccount(bankAccount);
-    }
-
-    public void setBankAccount(final BankAccount bankAccount) {
-        this.bankAccount = new BankAccount(bankAccount);
-    }
-
-    public TransactionType getType() {
-        return type;
-    }
-
-    public void setType(final TransactionType type) {
-        this.type = type;
-    }
-
-    public Double getMoney() {
-        return money;
-    }
-
-    public void setMoney(final Double money) {
-        this.money = money;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
 }

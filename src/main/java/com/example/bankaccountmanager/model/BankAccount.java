@@ -1,114 +1,62 @@
 package com.example.bankaccountmanager.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
 import java.util.Set;
 
-@Table
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "BANK_ACCOUNTS", schema = "public")
 @Entity
 public class BankAccount {
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bankAccountID;
+    @NonNull
+    @NotBlank
+    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
-    @Column(length = 200, nullable = false, unique = true)
+    @NonNull
+    @NotBlank
+    @Length(min = 1, max = 200)
+    @Pattern(regexp = "^[A-Z]+[a-z](1, 200)$")
+    @Column(nullable = false, unique = true, length = 200)
     private String iban;
+    @NonNull
+    @NotBlank
+    @Size(min = 0)
     @Column(nullable = false)
-    private Double availability;
+    private Double balance;
+    @NonNull
+    @NotBlank
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date discoveryDate;
+    @NonNull
+    @NotBlank
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date expiryDate;
+    @NonNull
+    @NotBlank
+    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "holder_id", nullable = false)
     private User holder;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bankAccount")
-    private Set<Transaction> transactions;
-
-    public BankAccount() {
-    }
-    public BankAccount(final BankAccount other) {
-        this(other.getBank(), other.getIban(), other.getAvailability(),
-                other.getDiscoveryDate(), other.getExpiryDate(),
-                other.getHolder(), other.getTransactions());
-    }
-    public BankAccount(final Bank bank, final String iban,
-                       final Double availability, final Date discoveryDate,
-                       final Date expiryDate, final User holder,
-                       final Set<Transaction> transactions) {
-        setBank(bank);
-        setIban(iban);
-        setAvailability(availability);
-        setDiscoveryDate(discoveryDate);
-        setExpiryDate(expiryDate);
-        setHolder(holder);
-        setTransactions(transactions);
-    }
-
-    public Long getBankAccountID() {
-        return bankAccountID;
-    }
-
-    public void setBankAccountID(final Long bankAccountID) {
-        this.bankAccountID = bankAccountID;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public void setBank(final Bank bank) {
-        this.bank = bank;
-    }
-
-    public String getIban() {
-        return iban;
-    }
-
-    public void setIban(final String iban) {
-        this.iban = iban;
-    }
-
-    public Double getAvailability() {
-        return availability;
-    }
-
-    public void setAvailability(final Double availability) {
-        this.availability = availability;
-    }
-
-    public Date getDiscoveryDate() {
-        return discoveryDate;
-    }
-
-    public void setDiscoveryDate(final Date discoveryDate) {
-        this.discoveryDate = discoveryDate;
-    }
-
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(final Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public User getHolder() {
-        return holder;
-    }
-
-    public void setHolder(final User holder) {
-        this.holder = holder;
-    }
-
-    public Set<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(final Set<Transaction> transactions) {
-        this.transactions = transactions;
-    }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "counterparty")
+    private Set<Transaction> counterpartyTransactions;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipient")
+    private Set<Transaction> recipientTransactions;
 }

@@ -1,49 +1,28 @@
 package com.example.bankaccountmanager.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
-@Table
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "PASSWORDS", schema = "public")
 @Entity
 public class Password {
+    @EqualsAndHashCode.Include
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long passwordID;
+    @NonNull
+    @NotBlank
+    @Length(min = 1, max = 400)
     @Column(nullable = false, length = 400)
-    private String hash;
+    private String password;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="owner_id", nullable=false)
     private User owner;
-
-    public Password() {
-    }
-    public Password(final Password other) {
-        this(other.getHash(), other.getOwner());
-    }
-    public Password(final String hash, final User owner) {
-        setHash(hash);
-        setOwner(owner);
-    }
-
-    public Long getPasswordID() {
-        return passwordID;
-    }
-
-    public void setPasswordID(final Long passwordID) {
-        this.passwordID = passwordID;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(final String hash) {
-        this.hash = hash;
-    }
-
-    public User getOwner() {
-        return new User(owner);
-    }
-
-    public void setOwner(final User owner) {
-        this.owner = new User(owner);
-    }
 }

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/head::head('Bank Account Manager: Register')"/>
+<body>
+<form th:object="${user}" method="POST" class="container">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input th:field="*{name}" type="text" class="form-control" id="name" aria-describedby="name" placeholder="Enter name" required>
+        <div th:if="${#fields.hasErrors('name')}"
+             class="alert alert-danger alert-dismissible fade show" data-err-alert>
+            <span th:errors="*{name}" class="alert-danger"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="surname">Surname</label>
+        <input th:field="*{surname}" type="text" class="form-control" id="surname" aria-describedby="surname" placeholder="Enter surname" required>
+        <div th:if="${#fields.hasErrors('surname')}"
+             class="alert alert-danger alert-dismissible fade show" data-err-alert>
+            <span th:errors="*{surname}" class="alert-danger"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="telephone">Telephone</label>
+        <input th:field="*{telephone}" type="tel" class="form-control" id="telephone" aria-describedby="telephone" placeholder="Enter telephone" required>
+        <div th:if="${#fields.hasErrors('telephone')}"
+             class="alert alert-danger alert-dismissible fade show" data-err-alert>
+            <span th:errors="*{telephone}" class="alert-danger"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="birthDate">BirthDate</label>
+        <input th:field="*{birthDate}" type="date" class="form-control" id="birthDate" aria-describedby="birthDate" placeholder="Enter birthDate" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email address</label>
+        <input th:field="*{email}" type="email" class="form-control" id="email" aria-describedby="email" placeholder="Enter email" required>
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <div th:if="${#fields.hasErrors('email')}"
+             class="alert alert-danger alert-dismissible fade show" data-err-alert>
+            <span th:errors="*{email}" class="alert-danger"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input th:field="*{username}" type="text" class="form-control" id="username" aria-describedby="username" placeholder="Enter username" required>
+        <div th:if="${#fields.hasErrors('username')}"
+             class="alert alert-danger alert-dismissible fade show" data-err-alert>
+            <span th:errors="*{username}" class="alert-danger"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input th:field="*{password.password}" type="password" class="form-control" id="password" aria-describedby="password" placeholder="Enter Password" required>
+        <div th:if="${#fields.hasErrors('password')}"
+             class="alert alert-danger alert-dismissible fade show" data-err-alert>
+            <span th:errors="*{password}" class="alert-danger"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password2">Re-Entered Password</label>
+        <input type="password" class="form-control" id="password2" aria-describedby="re-entered password" placeholder="Re-Enter Password" required>
+    </div>
+    <div class="form-group">
+        <label for="role">Role</label>
+        <select th:field="*{role}" class="form-control" id="role" required>
+            <option value="CLIENT">Client</option>
+        </select>
+    </div>
+    <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+        <label class="form-check-label" for="privacyPolicy">I agree with your privacy policy.</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+</form>
+<div th:replace="fragments/foot::foot"></div>
+</body>
+</html>
