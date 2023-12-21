@@ -28,7 +28,8 @@ public class BankAccountController {
     public String getAllUserBankAccountsForm(Model model, HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("user");
         if(user != null) {
-            model.addAttribute("bank-accounts", bankAccountService.findByUser(user.getUserID()));
+            Collection<BankAccount> accounts =  bankAccountService.findByUser(user.getUserID());
+            model.addAttribute("bankAccounts", accounts);
             return "bank-accounts";
         } else {
             return "redirect:/auth-login";

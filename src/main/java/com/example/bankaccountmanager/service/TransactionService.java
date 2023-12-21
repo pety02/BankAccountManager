@@ -8,7 +8,6 @@ import java.util.NoSuchElementException;
 public interface TransactionService {
     Transaction makeTransaction(Transaction transaction);
     Transaction findById(Long transactionID) throws NoSuchElementException;
-
     Collection<Transaction> findLast10TransactionsByUser(Long userID);
     Collection<Transaction> findLast20TransactionsByUser(Long userID);
     Collection<Transaction> findLast50TransactionsByUser(Long userID);

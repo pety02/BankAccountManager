@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/head::head('Bank Account Manager: Bank Accounts')"></head>
+<body>
+<div th:replace="fragments/menu::navbar"></div>
+<h1>Accounts</h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">IBAN</th>
+        <th scope="col">Bank Name</th>
+        <th scope="col">Balance</th>
+        <th scope="col">Discovery Date</th>
+        <th scope="col">Expiry Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="account : ${bankAccounts}">
+        <td th:text="${account.iban}"></td>
+        <td th:text="${account.bank.name}"></td>
+        <td th:text="${account.balance}"></td>
+        <td th:text="${account.discoveryDate}"></td>
+        <td th:text="${account.expiryDate}"></td>
+        <td><a th:href="@{/transactions/{id}(id=${account.getBankAccountID()})}">Transactions</a></td>
+    </tr>
+    </tbody>
+</table>
+<div th:replace="fragments/foot::foot"></div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/head::head('Bank Accounts Manager: All Banks')"></head>
+<body>
+<div th:replace="fragments/menu::navbar"></div>
+<h1>Banks</h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="bank : ${banks}">
+        <td th:text="${bank.name}"></td>
+        <td th:text="${bank.address}"></td>
+    </tr>
+    </tbody>
+</table>
+<div th:replace="fragments/foot::foot"></div>
+</body>
+</html>

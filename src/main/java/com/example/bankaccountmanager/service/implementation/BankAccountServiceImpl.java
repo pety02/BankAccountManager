@@ -5,6 +5,7 @@ import com.example.bankaccountmanager.dao.UserRepository;
 import com.example.bankaccountmanager.exception.EntityNotFoundException;
 import com.example.bankaccountmanager.exception.InvalidEntityException;
 import com.example.bankaccountmanager.model.BankAccount;
+import com.example.bankaccountmanager.model.Transaction;
 import com.example.bankaccountmanager.service.BankAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,11 @@ public class BankAccountServiceImpl implements BankAccountService {
         } else {
             throw new EntityNotFoundException("Bank account deleted yet.");
         }
+    }
+
+    @Override
+    public Collection<Transaction> findAllTransactionsByBankAccount(Long bankAccountID) {
+        return bankAccountRepo.findAllByBankAccount(bankAccountID);
     }
 
     @Override

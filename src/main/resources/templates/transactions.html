@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/head::head('Bank Account Manager: Bank Account Transactions')"></head>
+<body>
+<div th:replace="fragments/menu::navbar"></div>
+<h1>Accounts</h1>
+<a href="/bank-accounts" class="btn btn-primary">Back</a>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Money</th>
+        <th scope="col">Reason</th>
+        <th scope="col">Type</th>
+        <th scope="col">Counterparty Name</th>
+        <th scope="col">Recipient Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="transaction : ${bankAccountTransactions}">
+        <td th:text="${transaction.dateTime}"></td>
+        <td th:text="${transaction.money}"></td>
+        <td th:text="${transaction.reason}"></td>
+        <td th:text="${transaction.type}"></td>
+        <td th:text="${transaction.counterparty.iban}"></td>
+        <td th:text="${transaction.recipient.iban}"></td>
+    </tr>
+    </tbody>
+</table>
+<div th:replace="fragments/foot::foot"></div>
+</body>
+</html>
