@@ -4,7 +4,13 @@
 <body>
 <div th:replace="fragments/menu::navbar"></div>
 <h1>Accounts</h1>
-<a href="/bank-accounts" class="btn btn-primary">Back</a>
+<div>
+    <a href="/bank-accounts" class="btn btn-primary">Back</a>
+    <a href="/transactions/last-ten" class="btn btn-info">Last 10</a>
+    <a href="/transactions/last-twenty" class="btn btn-info">Last 20</a>
+    <a href="/transactions/last-fifty" class="btn btn-info">Last 50</a>
+</div>
+<a onclick="openCloseNewTransactionForm();" class="btn btn-primary">New Bank Account</a>
 <table class="table">
     <thead>
     <tr>
@@ -28,5 +34,17 @@
     </tbody>
 </table>
 <div th:replace="fragments/foot::foot"></div>
+
+<script>
+    "use strict"
+    function openCloseNewTransactionForm() {
+        var newTrForm = document.getElementById('newTrForm');
+        if(newTrForm.style.display === "none") {
+            newTrForm.style.display = "block";
+        } else {
+            newTrForm.style.display = "none";
+        }
+    }
+</script>
 </body>
 </html>

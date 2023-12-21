@@ -2,6 +2,7 @@ package com.example.bankaccountmanager.web;
 
 import com.example.bankaccountmanager.model.Bank;
 import com.example.bankaccountmanager.model.BankAccount;
+import com.example.bankaccountmanager.model.Transaction;
 import com.example.bankaccountmanager.model.User;
 import com.example.bankaccountmanager.service.BankService;
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +41,16 @@ public class GlobalController {
         return null;
     }
 
+    @ModelAttribute("newTr")
+    public Transaction addEmptyTransaction(HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if(currentUser != null) {
+            return new Transaction();
+        }
+
+        return null;
+    }
+
     @ModelAttribute("roles")
     public LinkedList<String> addAllUserRoles() {
 
@@ -47,6 +58,21 @@ public class GlobalController {
         roles.add("CLIENT");
 
         return roles;
+    }
+
+    @ModelAttribute("transactionTypes")
+    public LinkedList<String> addTransactionTypes() {
+
+        LinkedList<String> transactionTypes = new LinkedList<>();
+        transactionTypes.add("CASH_WITHDRAW");
+        transactionTypes.add("DEPOSIT");
+        transactionTypes.add("CHECK");
+        transactionTypes.add("ONLINE_PAYMENT");
+        transactionTypes.add("DEBIT_CARD_CHARGE");
+        transactionTypes.add("WIRE_TRANSFER");
+        transactionTypes.add("LOAN_PAYMENT");
+
+        return transactionTypes;
     }
 
     @ModelAttribute("banks")
