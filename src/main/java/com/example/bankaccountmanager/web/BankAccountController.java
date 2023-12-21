@@ -1,27 +1,35 @@
 package com.example.bankaccountmanager.web;
 
+import com.example.bankaccountmanager.model.Bank;
 import com.example.bankaccountmanager.model.BankAccount;
 import com.example.bankaccountmanager.model.User;
 import com.example.bankaccountmanager.service.BankAccountService;
+import com.example.bankaccountmanager.service.BankService;
+import com.example.utils.IBANsGenerator;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collection;
+
+import static org.springframework.validation.BindingResult.MODEL_KEY_PREFIX;
 
 @Controller
 @RequestMapping("/bank-accounts")
 @Slf4j
 public class BankAccountController {
     private BankAccountService bankAccountService;
+    private BankService bankService;
     @Autowired
-    public BankAccountController(BankAccountService bankAccountService) {
+    public BankAccountController(BankAccountService bankAccountService, BankService bankService) {
         this.bankAccountService = bankAccountService;
+        this.bankService = bankService;
     }
 
     @GetMapping
@@ -37,22 +45,55 @@ public class BankAccountController {
     }
 
     @GetMapping("/{id}")
-    public String getUserBankAccountForm(Model model, Long bankAccountID, HttpSession httpSession) {
+    public String getUserBankAccountForm(Model model,
+                                         Long bankAccountID,
+                                         HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("user");
         if(user != null) {
             Collection<BankAccount> accounts = bankAccountService.findByUser(user.getUserID());
             for(BankAccount ba : accounts) {
                 if(ba.getBankAccountID().equals(bankAccountID)) {
-                  break;
-                } else {
-                    // TODO: throw exception
+                    httpSession.setAttribute("bankAccount", ba);
+                    break;
                 }
             }
-            model.addAttribute("bank-accounts", bankAccountService.findById(bankAccountID));
             return "bank-accounts";
         } else {
             return "redirect:/auth-login";
         }
     }
 
+    @PostMapping
+    public String openBankAccount(@Valid @ModelAttribute("newBA") BankAccount bankAccount,
+                                  final BindingResult binding,
+                                  RedirectAttributes redirectAttributes,
+                                  HttpSession httpSession) {
+        User loggedUser = (User) httpSession.getAttribute("user");
+        if(loggedUser != null) {
+            //bankAccount.setBank(bankService.getBankById(1L));
+            bankAccount.setHolder(loggedUser);
+            bankAccount.setIban(IBANsGenerator.generateIBAN());
+        }
+        if (binding.hasErrors()) {
+            log.error("Error opening bankAccount: {}", binding.getAllErrors());
+            redirectAttributes.addFlashAttribute("bankAccount", bankAccount);
+            redirectAttributes.addFlashAttribute(MODEL_KEY_PREFIX + "bankAccount",
+                    binding);
+            return "bank-accounts";
+        }
+
+        bankAccountService.openAccount(bankAccount);
+        return "redirect:/bank-accounts";
+    }
+
+    @RequestMapping("/close/{id}")
+    public String closeBankAccount(@PathVariable("id") Long id, Model model, HttpSession httpSession) {
+        BankAccount toBeDeletedBA = bankAccountService.findById(id);
+        if(toBeDeletedBA != null) {
+            bankAccountService.closeAccount(toBeDeletedBA);
+            return "redirect:/bank-accounts";
+        }
+
+        return "bank-accounts";
+    }
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -21,19 +22,14 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionID;
     @NonNull
-    @NotBlank
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date dateTime;
+    private LocalDate dateTime;
     @NonNull
-    @NotBlank
-    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "counterparty_id", nullable = false)
     private BankAccount counterparty;
     @NonNull
-    @NotBlank
-    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_id", nullable = false)
     private BankAccount recipient;
@@ -44,8 +40,6 @@ public class Transaction {
     @Column(nullable = false, length = 50)
     private TransactionType type;
     @NonNull
-    @NotBlank
-    @Size(min = 0)
     @Column(nullable = false)
     private Double money;
     @NonNull

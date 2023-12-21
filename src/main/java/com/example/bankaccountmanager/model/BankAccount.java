@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -23,40 +24,32 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bankAccountID;
     @NonNull
-    @NotBlank
-    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
     @NonNull
-    @NotBlank
-    @Length(min = 1, max = 200)
-    @Pattern(regexp = "^[A-Z]+[a-z](1, 200)$")
+    //@NotBlank
+    @Length(min = 0, max = 200)
+    @Pattern(regexp = "^[A-Z]{3}[0-9]{10}$")
     @Column(nullable = false, unique = true, length = 200)
     private String iban;
     @NonNull
-    @NotBlank
-    @Size(min = 0)
     @Column(nullable = false)
     private Double balance;
     @NonNull
-    @NotBlank
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date discoveryDate;
+    private LocalDate discoveryDate;
     @NonNull
-    @NotBlank
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date expiryDate;
+    private LocalDate expiryDate;
     @NonNull
-    @NotBlank
-    @Size(min = 1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "holder_id", nullable = false)
     private User holder;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "counterparty")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "counterparty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Transaction> counterpartyTransactions;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipient")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Transaction> recipientTransactions;
 }

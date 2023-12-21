@@ -25,7 +25,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public BankAccount openAccount(BankAccount account) {
-        return bankAccountRepo.saveAndFlush(account);
+        return bankAccountRepo.save(account);
     }
 
     @Override

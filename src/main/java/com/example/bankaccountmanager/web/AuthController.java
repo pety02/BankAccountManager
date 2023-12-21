@@ -55,7 +55,7 @@ public class AuthController {
             return "redirect:register";
         }
         try {
-            user.setRole(UserRole.CLIENT);
+            //user.setRole(UserRole.CLIENT);
             LocalDate now = LocalDate.now();
             int year = now.getYear() - 18;
             LocalDate dateEighteenYearsAgo = LocalDate.of(year, now.getMonth(), now.getDayOfMonth());
