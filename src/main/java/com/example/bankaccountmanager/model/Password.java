@@ -19,10 +19,8 @@ public class Password {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long passwordID;
     @NonNull
-    @NotBlank
-    @Length(min = 1, max = 400)
-    @Column(nullable = false, length = 400)
     private String password;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn
     private User owner;
 }

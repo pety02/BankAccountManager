@@ -59,7 +59,6 @@ public class User {
     @Column(nullable = false, length = 150, unique = true)
     private String username;
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
-    @PrimaryKeyJoinColumn
     private Password password;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "holder")
     private Set<BankAccount> bankAccounts;

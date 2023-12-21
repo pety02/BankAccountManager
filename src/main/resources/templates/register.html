@@ -58,13 +58,14 @@
         <input th:field="*{password.password}" type="password" class="form-control" id="password" aria-describedby="password" placeholder="Enter Password" required>
         <div th:if="${#fields.hasErrors('password')}"
              class="alert alert-danger alert-dismissible fade show" data-err-alert>
-            <span th:errors="*{password}" class="alert-danger"></span>
+            <span th:errors="*{password.password}" class="alert-danger"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     </div>
     <div class="form-group">
         <label for="password2">Re-Entered Password</label>
-        <input type="password" class="form-control" id="password2" aria-describedby="re-entered password" placeholder="Re-Enter Password" required>
+        <input oninput="checkPasswords();" type="password" class="form-control" id="password2" aria-describedby="re-entered password" placeholder="Re-Enter Password" required>
+        <span id="reEnteredPasswordErrors"></span>
     </div>
     <div class="form-group">
         <label for="role">Role</label>
@@ -77,7 +78,24 @@
         <label class="form-check-label" for="privacyPolicy">I agree with your privacy policy.</label>
     </div>
     <button type="submit" class="btn btn-primary">Sign Up</button>
+    <a class="btn btn-success" href="/auth/login">Sign In</a>
 </form>
 <div th:replace="fragments/foot::foot"></div>
+
+<script>
+    function checkPasswords() {
+        var password = document.getElementById('password').value;
+        var reEnteredPassword = document.getElementById('password2').value;
+
+        var reEnteredPasswordErrors = document.getElementById('reEnteredPasswordErrors');
+
+        if(password === reEnteredPassword) {
+            reEnteredPasswordErrors.innerText = "";
+        } else {
+            reEnteredPasswordErrors.innerText = "Password and reEnteredPassword should be the same.";
+            reEnteredPasswordErrors.style.color = "red";
+        }
+    }
+</script>
 </body>
 </html>

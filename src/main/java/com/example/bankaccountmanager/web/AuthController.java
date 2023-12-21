@@ -8,17 +8,13 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 
 import static org.springframework.validation.BindingResult.MODEL_KEY_PREFIX;
 
@@ -41,7 +37,6 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
     public String registerNewUser(@Valid @ModelAttribute("user") User user,
                                   final BindingResult binding,
                                   RedirectAttributes redirectAttributes) {
@@ -92,7 +87,6 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password,
                         RedirectAttributes redirectAttributes,
@@ -110,7 +104,7 @@ public class AuthController {
                 return "redirect:login";
             } else {
                 session.setAttribute("user", loggedUser);
-                return "home";
+                return "redirect:/home";
             }
         } catch (Exception ex) {
             log.error("Error login user", ex);
@@ -120,7 +114,6 @@ public class AuthController {
     }
 
     @RequestMapping("/logout")
-    @ResponseStatus(HttpStatus.OK)
     public String logout(HttpSession session) { // OR SessionStatus status
         session.invalidate();
         return "redirect:/";
