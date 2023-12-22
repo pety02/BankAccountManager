@@ -20,20 +20,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "t.counterparty.holder.userID = :userID or " +
             "t.recipient.holder.userID = :userID"
             + " order by t.dateTime desc " +
-            "fetch first 10 rows only")
+            "limit 10")
     Collection<Transaction> findLast10TransactionsByUserID(Long userID);
 
     @Query(value = "select t from Transaction t where " +
             "t.counterparty.holder.userID = :userID or " +
             "t.recipient.holder.userID = :userID"
             + " order by t.dateTime desc " +
-            "fetch first 20 rows only")
+            "limit 20")
     Collection<Transaction> findLast20TransactionsByUserID(Long userID);
 
     @Query(value = "select t from Transaction t where " +
             "t.counterparty.holder.userID = :userID or " +
             "t.recipient.holder.userID = :userID"
             + " order by t.dateTime desc " +
-            "fetch first 50 rows only")
+            "limit 50")
     Collection<Transaction> findLast50TransactionsByUserID(Long userID);
 }

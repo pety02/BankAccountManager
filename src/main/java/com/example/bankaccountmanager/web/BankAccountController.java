@@ -45,8 +45,7 @@ public class BankAccountController {
     }
 
     @GetMapping("/{id}")
-    public String getUserBankAccountForm(Model model,
-                                         Long bankAccountID,
+    public String getUserBankAccountForm(Long bankAccountID,
                                          HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("user");
         if(user != null) {

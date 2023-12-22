@@ -1,16 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="fragments/head::head('Bank Account Manager: Bank Account Transactions')"></head>
-<body>
+<body onload="openCloseNewTransactionForm();">
 <div th:replace="fragments/menu::navbar"></div>
 <h1>Accounts</h1>
 <div>
     <a href="/bank-accounts" class="btn btn-primary">Back</a>
-    <a href="/transactions/last-ten" class="btn btn-info">Last 10</a>
-    <a href="/transactions/last-twenty" class="btn btn-info">Last 20</a>
-    <a href="/transactions/last-fifty" class="btn btn-info">Last 50</a>
+    <a th:href="@{/bank-accounts/{id}/last-ten/transactions(id=${id})}" class="btn btn-info">Last 10</a>
+    <a th:href="@{/bank-accounts/{id}/last-twenty/transactions(id=${id})}" class="btn btn-info">Last 20</a>
+    <a th:href="@{/bank-accounts/{id}/last-fifty/transactions(id=${id})}" class="btn btn-info">Last 50</a>
 </div>
-<a onclick="openCloseNewTransactionForm();" class="btn btn-primary">New Bank Account</a>
+<a onclick="openCloseNewTransactionForm();" class="btn btn-primary">New Transaction</a>
+<span th:text="${errorMessage}"></span>
+<form th:object="${newTr}" method="POST" id="newTrForm" class="container">
+    <div class="form-group">
+        <label for="dateAndTime">Date</label>
+        <input type="date" th:field="*{dateTime}" id="dateAndTime" name="dateAndTime" required>
+    </div>
+    <div class="form-group">
+        <label for="recipientUsername">Recipient Username</label>
+        <input type="text" th:field="*{recipient.holder.username}" id="recipientUsername" name="recipientUsername" required>
+    </div>
+    <div class="form-group">
+        <label for="type">Transaction Type</label>
+        <select th:field="*{type}" id="type" name="type" required>
+            <option th:each="t : ${transactionTypes}" th:value="${t}" th:text="${t}"></option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="money">Money</label>
+        <input type="number" th:field="*{money}" id="money" name="money" required>
+    </div>
+    <div class="form-group">
+        <label for="reason">Reason</label>
+        <input type="text" th:field="*{reason}" id="reason" name="reason" required>
+    </div>
+    <button type="submit">Execute Transaction</button>
+</form>
 <table class="table">
     <thead>
     <tr>

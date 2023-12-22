@@ -21,7 +21,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction makeTransaction(Transaction transaction) {
-        return transactionRepo.saveAndFlush(transaction);
+        return transactionRepo.save(transaction);
     }
 
     @Override

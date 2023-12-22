@@ -43,7 +43,7 @@
         <td th:text="${account.balance}"></td>
         <td th:text="${account.discoveryDate}"></td>
         <td th:text="${account.expiryDate}"></td>
-        <td><a th:href="@{/transactions/{id}(id=${account.getBankAccountID()})}">Transactions</a></td>
+        <td><a th:href="@{/bank-accounts/{id}/transactions(id=${account.getBankAccountID()})}">Transactions</a></td>
         <td><a th:href="@{/bank-accounts/close/{id}(id=${account.getBankAccountID()})}">Delete</a></td>
     </tr>
     </tbody>

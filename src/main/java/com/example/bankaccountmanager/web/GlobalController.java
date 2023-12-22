@@ -66,11 +66,8 @@ public class GlobalController {
         LinkedList<String> transactionTypes = new LinkedList<>();
         transactionTypes.add("CASH_WITHDRAW");
         transactionTypes.add("DEPOSIT");
-        transactionTypes.add("CHECK");
         transactionTypes.add("ONLINE_PAYMENT");
         transactionTypes.add("DEBIT_CARD_CHARGE");
-        transactionTypes.add("WIRE_TRANSFER");
-        transactionTypes.add("LOAN_PAYMENT");
 
         return transactionTypes;
     }

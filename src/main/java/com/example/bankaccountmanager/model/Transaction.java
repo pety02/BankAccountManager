@@ -33,11 +33,8 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_id", nullable = false)
     private BankAccount recipient;
-    @NonNull
-    @NotBlank
-    @Length(min = 1, max = 50)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private TransactionType type;
     @NonNull
     @Column(nullable = false)
