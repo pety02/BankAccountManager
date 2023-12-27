@@ -1,74 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="fragments/head::head('Bank Account Manager: Bank Account Transactions')"></head>
-<body onload="openCloseNewTransactionForm();">
+<body onload="openCloseNewTransactionForm();showIBANs();">
 <div th:replace="fragments/menu::navbar"></div>
-<h1>Accounts</h1>
-<div>
-    <a href="/bank-accounts" class="btn btn-primary">Back</a>
-    <a th:href="@{/bank-accounts/{id}/last-ten/transactions(id=${id})}" class="btn btn-info">Last 10</a>
-    <a th:href="@{/bank-accounts/{id}/last-twenty/transactions(id=${id})}" class="btn btn-info">Last 20</a>
-    <a th:href="@{/bank-accounts/{id}/last-fifty/transactions(id=${id})}" class="btn btn-info">Last 50</a>
+<div class="container">
+    <p>Balance:
+        <span th:text="'BGN ' + ${currentBankAccountBalance}" class="text-warning"></span>
+        , IBAN:
+        <span th:text="${currentBankAccountIBAN}" class="text-info"></span>
+    </p>
+    <span th:text="${errorMessage}" class="text-danger"></span>
+    <h1>Transactions</h1>
+    <div class="container">
+        <a href="/bank-accounts" class="btn btn-primary">Back</a>
+        <a th:href="@{/bank-accounts/{id}/last-ten/transactions(id=${id})}" class="btn btn-info">Last 10</a>
+        <a th:href="@{/bank-accounts/{id}/last-twenty/transactions(id=${id})}" class="btn btn-info">Last 20</a>
+        <a th:href="@{/bank-accounts/{id}/last-fifty/transactions(id=${id})}" class="btn btn-info">Last 50</a>
+        <a onclick="openCloseNewTransactionForm();" class="btn btn-primary">New Transaction</a>
+    </div>
+    <form th:method="GET" id="search-form" th:action="@{/bank-accounts/{id}/transactions/recipient-ibans(id=${id})}">
+        <label for="rUsername"></label>
+        <input th:value="${rUsername}" type="text" id="rUsername" name="rUsername">
+        <button type="submit">Search IBANs</button>
+    </form>
+    <span id="searchBox"></span>
+    <form th:object="${newTr}" method="POST" id="newTrForm" class="container">
+        <div id="searchIBANs">
+
+            <label for="recipient.iban">Recipient IBAN</label>
+            <select id="recipient.iban" name="recipient.iban" required>
+                <option th:each="ba : ${possibleRecipientBankAccounts}" th:field="*{recipient.iban}" th:text="${ba.holder.name} + ' ' + ${ba.holder.surname} + ' - ' + ${ba.iban}" th:value="${ba.iban}"></option>
+            </select>
+            <span id="noIBANs" class="text-danger">No IBANs for showing.</span>
+        </div>
+        <div class="form-group">
+            <label for="type">Transaction Type</label>
+            <select th:field="*{type}" id="type" name="type" required>
+                <option onselect="hideIBAN();" th:each="t : ${transactionTypes}" th:value="${t}" th:text="${t}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="money">Money</label>
+            <input type="number" th:field="*{money}" id="money" name="money" required>
+        </div>
+        <div class="form-group">
+            <label for="reason">Reason</label>
+            <input type="text" th:field="*{reason}" id="reason" name="reason" required>
+        </div>
+        <button type="submit">Execute Transaction</button>
+    </form>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col" class="text-info">Date</th>
+            <th scope="col" class="text-info">Type</th>
+            <th scope="col" class="text-info">Money</th>
+            <th scope="col" class="text-info">Reason</th>
+            <th scope="col" class="text-info">Counterparty Name</th>
+            <th scope="col" class="text-info">Recipient Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="transaction: ${bankAccountTransactions}">
+            <td th:text="${transaction.dateTime}"></td>
+            <td th:text="${transaction.type}"></td>
+            <td th:text="${transaction.type.name() == 'DEPOSIT'} ? ${'BGN +' + transaction.money} : ${'BGN -' + transaction.money}"
+                th:class="${transaction.type.name() == 'DEPOSIT'} ? 'text-success' : 'text-danger'"></td>
+            <td th:text="${transaction.reason}"></td>
+            <td th:text="${transaction.counterparty.holder.name + ' ' + transaction.counterparty.holder.surname}"></td>
+            <td th:text="${transaction.recipient.holder.name + ' ' + transaction.recipient.holder.surname}"></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
-<a onclick="openCloseNewTransactionForm();" class="btn btn-primary">New Transaction</a>
-<span th:text="${errorMessage}"></span>
-<form th:object="${newTr}" method="POST" id="newTrForm" class="container">
-    <div class="form-group">
-        <label for="dateAndTime">Date</label>
-        <input type="date" th:field="*{dateTime}" id="dateAndTime" name="dateAndTime" required>
-    </div>
-    <div class="form-group">
-        <label for="recipientUsername">Recipient Username</label>
-        <input type="text" th:field="*{recipient.holder.username}" id="recipientUsername" name="recipientUsername" required>
-    </div>
-    <div class="form-group">
-        <label for="type">Transaction Type</label>
-        <select th:field="*{type}" id="type" name="type" required>
-            <option th:each="t : ${transactionTypes}" th:value="${t}" th:text="${t}"></option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="money">Money</label>
-        <input type="number" th:field="*{money}" id="money" name="money" required>
-    </div>
-    <div class="form-group">
-        <label for="reason">Reason</label>
-        <input type="text" th:field="*{reason}" id="reason" name="reason" required>
-    </div>
-    <button type="submit">Execute Transaction</button>
-</form>
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">Date</th>
-        <th scope="col">Money</th>
-        <th scope="col">Reason</th>
-        <th scope="col">Type</th>
-        <th scope="col">Counterparty Name</th>
-        <th scope="col">Recipient Name</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="transaction : ${bankAccountTransactions}">
-        <td th:text="${transaction.dateTime}"></td>
-        <td th:text="${transaction.money}"></td>
-        <td th:text="${transaction.reason}"></td>
-        <td th:text="${transaction.type}"></td>
-        <td th:text="${transaction.counterparty.iban}"></td>
-        <td th:text="${transaction.recipient.iban}"></td>
-    </tr>
-    </tbody>
-</table>
 <div th:replace="fragments/foot::foot"></div>
 
 <script>
-    "use strict"
     function openCloseNewTransactionForm() {
         var newTrForm = document.getElementById('newTrForm');
-        if(newTrForm.style.display === "none") {
+        var searchIBANs = document.getElementById('searchIBANs');
+        if(newTrForm.style.display === "none" ) {
             newTrForm.style.display = "block";
         } else {
             newTrForm.style.display = "none";
+        }
+        var selectIBANS = document.getElementById('iban');
+        var noIbansMessage = document.getElementById('noIBANs');
+
+        if(selectIBANS !== null) {
+            selectIBANS.style.display = "block";
+        }
+        noIbansMessage.style.display = "none";
+        searchIBANs.style.display = "none";
+    }
+
+    function showIBANs() {
+        var searchIbans = document.getElementById('searchIBANs');
+        var select = document.getElementById('recipient.iban');
+        var noIbansMsg = document.getElementById('noIBANs');
+        var newTrForm = document.getElementById('newTrForm');
+
+        if (select.children.length === 0 && noIbansMsg !== null) {
+            select.style.display = "none";
+            noIbansMsg.style.display = "none";
+            searchIbans.style.display = "block";
+        } else if (select.children.length > 0 && noIbansMsg !== null){
+            select.style.display = "block";
+            noIbansMsg.style.display = "none";
+            searchIbans.style.display = "block";
+        } else {
+            searchIbans.style.display = "none";
+        }
+
+        newTrForm.style.display = "block";
+    }
+
+    function hideIBAN() {
+        var searchFormMessage = document.getElementById('searchBox');
+        var transactionType = document.getElementById('type');
+        var searchForm = document.getElementById('search-form');
+        if(transactionType.innerText === 'CASH_WITHDRAW' || transactionType.innerText === 'DEPOSIT') {
+            searchFormMessage.innerText = "This transaction will be proceeded on current bank account.";
+            searchForm.style.display = "none";
         }
     }
 </script>

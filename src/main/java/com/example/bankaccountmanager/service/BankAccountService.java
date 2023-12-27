@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 
 public interface BankAccountService {
     BankAccount openAccount(BankAccount account);
+    BankAccount findByIBAN(String iban);
     BankAccount updateAccount(BankAccount account) throws EntityNotFoundException;
     BankAccount closeAccount(BankAccount account) throws EntityNotFoundException;
 
@@ -17,4 +18,6 @@ public interface BankAccountService {
     Double getBankAccountBalance(Long accountID) throws InvalidEntityException;
     BankAccount findById(Long accountID) throws NoSuchElementException;
     Collection<BankAccount> findByUser(Long userID);
+    Collection<BankAccount> findAllByUsername(String username);
+    Double calculateAllMoney(String username);
 }

@@ -2,6 +2,7 @@
 <html lang="en">
 <head th:replace="fragments/head::head('Bank Account Manager: Register')"/>
 <body>
+<div class="container">
 <form th:object="${user}" method="POST" class="container">
     <div class="form-group">
         <label for="name">Name</label>
@@ -80,6 +81,7 @@
     <button type="submit" class="btn btn-primary">Sign Up</button>
     <a class="btn btn-success" href="/auth/login">Sign In</a>
 </form>
+</div>
 <div th:replace="fragments/foot::foot"></div>
 
 <script>

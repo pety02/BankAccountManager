@@ -17,22 +17,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Collection<BankAccount> findAllBankAccountsByUserID(Long userID);
 
     @Query(value = "select t from Transaction t where " +
-            "t.counterparty.holder.userID = :userID or " +
-            "t.recipient.holder.userID = :userID"
+            "t.counterparty.bankAccountID = :userID or " +
+            "t.recipient.bankAccountID = :userID"
             + " order by t.dateTime desc " +
             "limit 10")
     Collection<Transaction> findLast10TransactionsByUserID(Long userID);
 
     @Query(value = "select t from Transaction t where " +
-            "t.counterparty.holder.userID = :userID or " +
-            "t.recipient.holder.userID = :userID"
+            "t.counterparty.bankAccountID = :userID or " +
+            "t.recipient.bankAccountID = :userID"
             + " order by t.dateTime desc " +
             "limit 20")
     Collection<Transaction> findLast20TransactionsByUserID(Long userID);
 
     @Query(value = "select t from Transaction t where " +
-            "t.counterparty.holder.userID = :userID or " +
-            "t.recipient.holder.userID = :userID"
+            "t.counterparty.bankAccountID = :userID or " +
+            "t.recipient.bankAccountID = :userID"
             + " order by t.dateTime desc " +
             "limit 50")
     Collection<Transaction> findLast50TransactionsByUserID(Long userID);

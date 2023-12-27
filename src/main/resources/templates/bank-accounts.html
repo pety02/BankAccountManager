@@ -4,6 +4,7 @@
 <body onload="openCloseNewBankAccountForm();">
 <div th:replace="fragments/menu::navbar"></div>
 <h2>Bank Accounts</h2>
+<p>Total Money: <span th:text="'BGN ' + ${totalMoney}" class="text-warning"></span></p>
 <a onclick="openCloseNewBankAccountForm();" class="btn btn-primary">New Bank Account</a>
 <form th:object="${newBA}" method="POST" id="newBAForm" class="container">
     <div class="form-group">
@@ -16,24 +17,16 @@
         <label for="balance">Balance</label>
         <input th:field="*{balance}" type="number" id="balance" name="balance" placeholder="Enter Balance" required>
     </div>
-    <div class="form-group">
-        <label for="discoveryDate">DiscoveryDate</label>
-        <input th:field="*{discoveryDate}"  type="date" id="discoveryDate" name="discoveryDate" required>
-    </div>
-    <div class="form-group">
-        <label for="expiryDate">ExpiryDate</label>
-        <input th:field="*{expiryDate}" type="date" id="expiryDate" name="expiryDate" required>
-    </div>
     <button type="submit">Open Bank Account</button>
 </form>
 <table class="table">
     <thead>
     <tr>
-        <th scope="col">IBAN</th>
-        <th scope="col">Bank Name</th>
-        <th scope="col">Balance</th>
-        <th scope="col">Discovery Date</th>
-        <th scope="col">Expiry Date</th>
+        <th scope="col" class="text-info">IBAN</th>
+        <th scope="col" class="text-info">Bank Name</th>
+        <th scope="col" class="text-info">Balance</th>
+        <th scope="col" class="text-info">Discovery Date</th>
+        <th scope="col" class="text-info">Expiry Date</th>
     </tr>
     </thead>
     <tbody>
@@ -44,7 +37,6 @@
         <td th:text="${account.discoveryDate}"></td>
         <td th:text="${account.expiryDate}"></td>
         <td><a th:href="@{/bank-accounts/{id}/transactions(id=${account.getBankAccountID()})}">Transactions</a></td>
-        <td><a th:href="@{/bank-accounts/close/{id}(id=${account.getBankAccountID()})}">Delete</a></td>
     </tr>
     </tbody>
 </table>
@@ -53,7 +45,7 @@
     "use strict"
     function openCloseNewBankAccountForm() {
         var newBAForm = document.getElementById('newBAForm');
-        if(newBAForm.style.display === "none") {
+        if(newBAForm.style.display === "none" ) {
             newBAForm.style.display = "block";
         } else {
             newBAForm.style.display = "none";

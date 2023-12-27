@@ -3,7 +3,8 @@
 <head th:replace="fragments/head::head('Bank Accounts Manager: Home page')"></head>
 <body>
 <div th:replace="fragments/menu::navbar"></div>
-<p>Welcome, <span th:text="${unm}"></span>!</p>
+<div class="container">
+<p>Welcome, <span th:text="${unm}" class="text-info"></span>!</p>
 <div class="container">
     <h2>About Us</h2>
     <p>Bank Account Manager is a web application which aim is to provide you easy way to store
@@ -13,6 +14,7 @@
     <p>If you have questions or you are not sure for anything, please contact us on
         <a>bank-accounts-manager@gmail.com</a></p>
     <p>Enjoy with us!</p>
+</div>
 </div>
 <div th:replace="fragments/foot::foot"></div>
 </body>

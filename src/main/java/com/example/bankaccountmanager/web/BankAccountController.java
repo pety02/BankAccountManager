@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import static org.springframework.validation.BindingResult.MODEL_KEY_PREFIX;
@@ -38,6 +39,7 @@ public class BankAccountController {
         if(user != null) {
             Collection<BankAccount> accounts =  bankAccountService.findByUser(user.getUserID());
             model.addAttribute("bankAccounts", accounts);
+            model.addAttribute("totalMoney", bankAccountService.calculateAllMoney(user.getUsername()));
             return "bank-accounts";
         } else {
             return "redirect:/auth-login";
@@ -67,12 +69,6 @@ public class BankAccountController {
                                   final BindingResult binding,
                                   RedirectAttributes redirectAttributes,
                                   HttpSession httpSession) {
-        User loggedUser = (User) httpSession.getAttribute("user");
-        if(loggedUser != null) {
-            //bankAccount.setBank(bankService.getBankById(1L));
-            bankAccount.setHolder(loggedUser);
-            bankAccount.setIban(IBANsGenerator.generateIBAN());
-        }
         if (binding.hasErrors()) {
             log.error("Error opening bankAccount: {}", binding.getAllErrors());
             redirectAttributes.addFlashAttribute("bankAccount", bankAccount);
@@ -81,8 +77,19 @@ public class BankAccountController {
             return "bank-accounts";
         }
 
-        bankAccountService.openAccount(bankAccount);
-        return "redirect:/bank-accounts";
+        User loggedUser = (User) httpSession.getAttribute("user");
+        if(loggedUser != null) {
+            bankAccount.setHolder(loggedUser);
+            bankAccount.setIban(IBANsGenerator.generateIBAN());
+            LocalDate now = LocalDate.now();
+            bankAccount.setDiscoveryDate(now);
+            int after4Years = now.getYear() + 4;
+            bankAccount.setExpiryDate(LocalDate.of(after4Years, now.getMonth(), now.getDayOfMonth()));
+            bankAccountService.openAccount(bankAccount);
+            return "redirect:/bank-accounts";
+        }
+
+        return "redirect:/auth/login";
     }
 
     @RequestMapping("/close/{id}")

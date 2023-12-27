@@ -29,6 +29,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
+    public BankAccount findByIBAN(String iban) {
+        return bankAccountRepo.findByIban(iban);
+    }
+
+    @Override
     public BankAccount updateAccount(BankAccount account) throws EntityNotFoundException {
         if(bankAccountRepo.existsById(account.getBankAccountID())) {
             return bankAccountRepo.saveAndFlush(account);
@@ -72,5 +77,21 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public Collection<BankAccount> findByUser(Long userID) {
         return userRepo.findAllBankAccountsByUserID(userID);
+    }
+
+    @Override
+    public Collection<BankAccount> findAllByUsername(String username) {
+        return bankAccountRepo.findAllByUsername(username);
+    }
+
+    @Override
+    public Double calculateAllMoney(String username) {
+        Collection<BankAccount> bankAccounts = bankAccountRepo.findAllByUsername(username);
+        double money = 0.0;
+        for (BankAccount bankAccount : bankAccounts) {
+            money += bankAccount.getBalance();
+        }
+
+        return money;
     }
 }
