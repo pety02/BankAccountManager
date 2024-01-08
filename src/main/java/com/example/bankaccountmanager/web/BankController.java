@@ -16,7 +16,6 @@ import java.util.Collection;
 @Slf4j
 public class BankController {
     private BankService bankService;
-
     @Autowired
     public BankController(BankService bankService) {
         this.bankService = bankService;

@@ -1,14 +1,11 @@
 package com.example.bankaccountmanager.web;
 
-import com.example.bankaccountmanager.exception.InvalidEntityException;
 import com.example.bankaccountmanager.model.BankAccount;
 import com.example.bankaccountmanager.model.Transaction;
-import com.example.bankaccountmanager.model.TransactionType;
 import com.example.bankaccountmanager.model.User;
 import com.example.bankaccountmanager.service.BankAccountService;
 import com.example.bankaccountmanager.service.TransactionService;
 import com.example.bankaccountmanager.service.UserService;
-import com.example.utils.IBANsGenerator;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +20,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static com.example.bankaccountmanager.model.TransactionType.DEPOSIT;
 import static org.springframework.validation.BindingResult.MODEL_KEY_PREFIX;
 
 @Controller
@@ -33,6 +29,7 @@ public class TransactionController {
     private BankAccountService bankAccountService;
     private TransactionService transactionService;
     private UserService userService;
+
 
     private String getLastXTransactions(User user, Long baId, RedirectAttributes redirect, Collection<Transaction> transactions) {
         if(user != null) {
@@ -44,6 +41,74 @@ public class TransactionController {
             return "redirect:/bank-accounts/{id}/transactions";
         } else {
             return "redirect:/auth/login";
+        }
+    }
+
+    private String makeDeposit(Transaction transaction, RedirectAttributes redirectAttributes, Double counterpartyBalance, Double transactionMoney) {
+        try {
+            BankAccount counterpartyUpdatedBA = transaction.getCounterparty();
+            counterpartyUpdatedBA.setBalance(counterpartyBalance + transactionMoney);
+            bankAccountService.updateAccount(counterpartyUpdatedBA);
+            transaction.setRecipient(counterpartyUpdatedBA);
+            transaction.setDateTime(LocalDate.now());
+            transactionService.makeTransaction(transaction);
+
+            return "redirect:/bank-accounts/{id}/transactions";
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "The transaction cannot be executed.");
+
+            return "redirect:/bank-accounts/{id}/transactions";
+        }
+    }
+
+    private String makePayment(Transaction transaction, RedirectAttributes redirectAttributes, Double counterpartyBalance, Double transactionMoney, BankAccount recipient) {
+        try {
+            BankAccount counterpartyUpdatedBA = transaction.getCounterparty();
+            if (counterpartyBalance < transactionMoney) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "No enough money. The transaction cannot be executed.");
+
+                return "redirect:/bank-accounts/{id}/transactions";
+            }
+            counterpartyUpdatedBA.setBalance(counterpartyBalance - transactionMoney);
+            bankAccountService.updateAccount(counterpartyUpdatedBA);
+            Double recipientCurrentBalance = recipient.getBalance();
+            recipient.setBalance(recipientCurrentBalance + transactionMoney);
+            bankAccountService.updateAccount(recipient);
+            transaction.setDateTime(LocalDate.now());
+            transactionService.makeTransaction(transaction);
+
+            return "redirect:/bank-accounts/{id}/transactions";
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "The transaction cannot be executed.");
+
+            return "redirect:/bank-accounts/{id}/transactions";
+        }
+    }
+
+    private String makeWithdraw(Transaction transaction, RedirectAttributes redirectAttributes, Double counterpartyBalance, Double transactionMoney) {
+        try {
+            BankAccount counterpartyUpdatedBA = transaction.getCounterparty();
+            if (counterpartyBalance < transactionMoney) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "No enough money. The transaction cannot be executed.");
+
+                return "redirect:/bank-accounts/{id}/transactions";
+            }
+            counterpartyUpdatedBA.setBalance(counterpartyBalance - transactionMoney);
+            bankAccountService.updateAccount(counterpartyUpdatedBA);
+            transaction.setRecipient(counterpartyUpdatedBA);
+            transaction.setDateTime(LocalDate.now());
+            transactionService.makeTransaction(transaction);
+
+            return "redirect:/bank-accounts/{id}/transactions";
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "No enough money. The transaction cannot be executed.");
+
+            return "redirect:/bank-accounts/{id}/transactions";
         }
     }
 
@@ -181,69 +246,13 @@ public class TransactionController {
                 Double transactionMoney = transaction.getMoney();
                 switch (transaction.getType()) {
                     case CASH_WITHDRAW -> {
-                        try {
-                            BankAccount counterpartyUpdatedBA = transaction.getCounterparty();
-                            if (counterpartyBalance < transactionMoney) {
-                                redirectAttributes.addFlashAttribute("errorMessage",
-                                        "No enough money. The transaction cannot be executed.");
-
-                                return "redirect:/bank-accounts/{id}/transactions";
-                            }
-                            counterpartyUpdatedBA.setBalance(counterpartyBalance - transactionMoney);
-                            bankAccountService.updateAccount(counterpartyUpdatedBA);
-                            transaction.setRecipient(counterpartyUpdatedBA);
-                            transaction.setDateTime(LocalDate.now());
-                            transactionService.makeTransaction(transaction);
-
-                            return "redirect:/bank-accounts/{id}/transactions";
-                        } catch (Exception ex) {
-                            redirectAttributes.addFlashAttribute("errorMessage",
-                                    "No enough money. The transaction cannot be executed.");
-
-                            return "redirect:/bank-accounts/{id}/transactions";
-                        }
+                        return makeWithdraw(transaction, redirectAttributes, counterpartyBalance, transactionMoney);
                     }
                     case ONLINE_PAYMENT, DEBIT_CARD_CHARGE -> {
-                        try {
-                            BankAccount counterpartyUpdatedBA = transaction.getCounterparty();
-                            if (counterpartyBalance < transactionMoney) {
-                                redirectAttributes.addFlashAttribute("errorMessage",
-                                        "No enough money. The transaction cannot be executed.");
-
-                                return "redirect:/bank-accounts/{id}/transactions";
-                            }
-                            counterpartyUpdatedBA.setBalance(counterpartyBalance - transactionMoney);
-                            bankAccountService.updateAccount(counterpartyUpdatedBA);
-                            Double recipientCurrentBalance = recipient.getBalance();
-                            recipient.setBalance(recipientCurrentBalance + transactionMoney);
-                            bankAccountService.updateAccount(recipient);
-                            transaction.setDateTime(LocalDate.now());
-                            transactionService.makeTransaction(transaction);
-
-                            return "redirect:/bank-accounts/{id}/transactions";
-                        } catch (Exception ex) {
-                            redirectAttributes.addFlashAttribute("errorMessage",
-                                    "The transaction cannot be executed.");
-
-                            return "redirect:/bank-accounts/{id}/transactions";
-                        }
+                        return makePayment(transaction, redirectAttributes, counterpartyBalance, transactionMoney, recipient);
                     }
                     case DEPOSIT -> {
-                        try {
-                            BankAccount counterpartyUpdatedBA = transaction.getCounterparty();
-                            counterpartyUpdatedBA.setBalance(counterpartyBalance + transactionMoney);
-                            bankAccountService.updateAccount(counterpartyUpdatedBA);
-                            transaction.setRecipient(counterpartyUpdatedBA);
-                            transaction.setDateTime(LocalDate.now());
-                            transactionService.makeTransaction(transaction);
-
-                            return "redirect:/bank-accounts/{id}/transactions";
-                        } catch (Exception ex) {
-                            redirectAttributes.addFlashAttribute("errorMessage",
-                                    "The transaction cannot be executed.");
-
-                            return "redirect:/bank-accounts/{id}/transactions";
-                        }
+                        return makeDeposit(transaction, redirectAttributes, counterpartyBalance, transactionMoney);
                     }
                 }
             }

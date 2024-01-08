@@ -40,14 +40,6 @@ public class AuthController {
     public String registerNewUser(@Valid @ModelAttribute("user") User user,
                                   final BindingResult binding,
                                   RedirectAttributes redirectAttributes) {
-        System.out.println(user.getRole());
-        System.out.println(user.getName());
-        System.out.println(user.getSurname());
-        System.out.println(user.getTelephone());
-        System.out.println(user.getBirthDate());
-        System.out.println(user.getEmail());
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
         if (binding.hasErrors()) {
             log.error("Error registering user: {}", binding.getAllErrors());
             redirectAttributes.addFlashAttribute("user", user);
@@ -55,7 +47,6 @@ public class AuthController {
             return "redirect:register";
         }
         try {
-            //user.setRole(UserRole.CLIENT);
             LocalDate now = LocalDate.now();
             int year = now.getYear() - 18;
             LocalDate dateEighteenYearsAgo = LocalDate.of(year, now.getMonth(), now.getDayOfMonth());
@@ -91,8 +82,6 @@ public class AuthController {
                         @RequestParam("password") String password,
                         RedirectAttributes redirectAttributes,
                         HttpSession session) {
-        System.out.println(username);
-        System.out.println(password);
         User loggedUser = null;
         try {
             loggedUser = authService.login(username, password);
